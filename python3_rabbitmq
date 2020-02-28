@@ -10,16 +10,28 @@ pip3 install pika
 
 Create a python3 script to send message to consumer 
 
-#!/usr/bin/env python
+-----------------------------------------------------------------------------------------------------------------------------
+
+#!/usr/bin/env python3
+
+
 import pika
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
+credentials = pika.PlainCredentials('admin', '123456')
+parameters = pika.ConnectionParameters('192.168.0.227',
+                                   5672,
+                                   '/',
+                                   credentials)
+
+connection = pika.BlockingConnection(parameters)
+
 channel = connection.channel()
 
 channel.queue_declare(queue='hello')
 
-channel.basic_publish(exchange='', routing_key='hello', body='Hello World!')
+channel.basic_publish(exchange='',
+                  routing_key='hello',
+                  body='Hello World..')
 print(" [x] Sent 'Hello World!'")
 connection.close()
 
@@ -27,14 +39,20 @@ connection.close()
 
 Create a consumer python3 file to recived message from Publisher.
 
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
+
 import pika
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+credentials = pika.PlainCredentials('admin', '123456')
+parameters = pika.ConnectionParameters('192.168.0.227',
+                                   5672,
+                                   '/',
+                                   credentials)
 
-channel.queue_declare(queue='hello')
+connection = pika.BlockingConnection(parameters)
+
+channel = connection.channel()
 
 
 def callback(ch, method, properties, body):
